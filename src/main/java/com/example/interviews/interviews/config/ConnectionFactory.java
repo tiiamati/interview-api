@@ -7,7 +7,7 @@ import java.sql.SQLException;
 
 public class ConnectionFactory {
 
-    private String URL_DATABASE = "jdbc:mysql://localhost/entrevistas?useTimezone=true&serverTimezone=UTC";
+    private String URL_DATABASE = "jdbc:mysql://localhost/interviews?useTimezone=true&serverTimezone=UTC";
     private String USER_DATABASE = "root";
     private String PASSWORD_DATABASE = "cinema123";
     private DataSource dataSource;
