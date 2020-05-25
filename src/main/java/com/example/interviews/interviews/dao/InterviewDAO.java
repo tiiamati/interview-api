@@ -94,7 +94,7 @@ public class InterviewDAO {
 
     public String insert(Interview interview) throws SQLException {
 
-        String sql = "INSERT INTO INTERVIEW (id_employee, id_interviewee, important, date, Hour, annotation) VALUES ( ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO INTERVIEW (id_employee, id_interviewee, important, date, Hour, annotation) VALUES ( ?, ?, ?, ?, ?, ?)";
 
         try (
                 PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
