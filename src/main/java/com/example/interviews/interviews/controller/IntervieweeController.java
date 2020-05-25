@@ -22,8 +22,9 @@ public class IntervieweeController {
             IntervieweeDAO intervieweeDAO = new IntervieweeDAO(connection);
 
             List<Interviewee> intervieweeList = intervieweeDAO.select();
-
             intervieweeList.stream().forEach(i -> System.out.println(i));
+
+            connection.close();
 
             return intervieweeList;
         }
@@ -35,7 +36,10 @@ public class IntervieweeController {
         try (Connection connection = new ConnectionFactory().getConnection()) {
             IntervieweeDAO intervieweeDAO = new IntervieweeDAO(connection);
 
-            return intervieweeDAO.select(id);
+            Interviewee result = intervieweeDAO.select(id);
+            connection.close();
+
+            return result;
         }
     }
 
@@ -45,7 +49,10 @@ public class IntervieweeController {
         try (Connection connection = new ConnectionFactory().getConnection()) {
             IntervieweeDAO intervieweeDAO = new IntervieweeDAO(connection);
 
-            return intervieweeDAO.insert(interviewee);
+            String result = intervieweeDAO.insert(interviewee);
+            connection.close();
+
+            return result;
         }
     }
 }

@@ -11,10 +11,19 @@ public class InterviewByInterviewId {
     private List<Properties> properties;
     private Boolean important;
     private String date;
+    private String hour;
     private String annotation;
 
     public int getId() {
         return id;
+    }
+
+    public String getHour() {
+        return hour;
+    }
+
+    public void setHour(String hour) {
+        this.hour = hour;
     }
 
     public void setId(int id) {

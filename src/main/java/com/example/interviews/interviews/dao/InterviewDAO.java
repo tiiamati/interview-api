@@ -1,11 +1,12 @@
 package com.example.interviews.interviews.dao;
 
-
 import com.example.interviews.interviews.model.*;
+import com.example.interviews.interviews.utils.DateFormat;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class InterviewDAO {
 
@@ -13,9 +14,13 @@ public class InterviewDAO {
             "i.id, i.important, i.date, i.annotation, " +
             "e.id, e.name, " +
             "interviewee.id, interviewee.name, interviewee.cellphone, interviewee.email, interviewee.curriculum, interviewee.city, " +
-            "interviewee.date_of_birth, interviewee.time_worked, interviewee.linkedin FROM INTERVIEW i " +
+            "interviewee.date_of_birth, interviewee.time_worked, interviewee.linkedin, " +
+            "i.hour " +
+            "FROM INTERVIEW i " +
             "INNER JOIN INTERVIEWEE interviewee ON interviewee.id = i.id_interviewee " +
             "INNER JOIN EMPLOYEE e ON e.id = i.id_employee ";
+
+    private String updateQuery = "UPDATE INTERVIEW SET ";
 
     private Connection connection;
 
@@ -29,6 +34,7 @@ public class InterviewDAO {
                 .id(resultSet.getInt(1))
                 .important(resultSet.getBoolean(2))
                 .date(resultSet.getString(3))
+                .hour(DateFormat.getHour(resultSet.getString(16)))
                 .annotation(resultSet.getString(4))
                 .employee(Employee.builder()
                     .id(resultSet.getInt(5))
@@ -54,6 +60,7 @@ public class InterviewDAO {
                 .id(resultSet.getInt(1))
                 .important(resultSet.getBoolean(2))
                 .date(resultSet.getString(3))
+                .hour(DateFormat.getHour(resultSet.getString(16)))
                 .annotation(resultSet.getString(4))
                 .interviewee(Interviewee.builder()
                         .id(resultSet.getInt(7))
@@ -68,6 +75,7 @@ public class InterviewDAO {
                 .id(resultSet.getInt(1))
                 .important(resultSet.getBoolean(2))
                 .date(resultSet.getString(3))
+                .hour(DateFormat.getHour(resultSet.getString(16)))
                 .annotation(resultSet.getString(4))
                 .interviewee(Interviewee.builder()
                         .id(resultSet.getInt(7))
@@ -86,7 +94,7 @@ public class InterviewDAO {
 
     public String insert(Interview interview) throws SQLException {
 
-        String sql = "INSERT INTO INTERVIEW (id_employee, id_interviewee, important, date, annotation) VALUES ( ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO INTERVIEW (id_employee, id_interviewee, important, date, Hour, annotation) VALUES ( ?, ?, ?, ?, ?)";
 
         try (
                 PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
@@ -95,7 +103,8 @@ public class InterviewDAO {
             preparedStatement.setInt(2, interview.getInterviewee().getId());
             preparedStatement.setBoolean(3, interview.getImportant());
             preparedStatement.setString(4, interview.getDate());
-            preparedStatement.setString(5, interview.getAnnotation());
+            preparedStatement.setString(5, interview.getHour());
+            preparedStatement.setString(6, interview.getAnnotation());
 
             preparedStatement.execute();
 
@@ -170,6 +179,56 @@ public class InterviewDAO {
                 return interviewList;
             }
         }
+    }
+
+    public String update(Interview interview, int id) throws SQLException {
+
+        if (Objects.nonNull(interview.getImportant())) {
+            updateQuery += "important = ? ";
+        } else if (Objects.nonNull(interview.getAnnotation())) {
+            updateQuery += "annotation = ? ";
+        } else if (Objects.nonNull(interview.getDate())) {
+            updateQuery += "date = ? ";
+        } else if (Objects.nonNull(interview.getHour())) {
+            updateQuery += "Hour = ? ";
+        } else if (Objects.nonNull(interview.getEmployee())) {
+            updateQuery += "id_employee = ? ";
+        }  else if (Objects.nonNull(interview.getInterviewee())) {
+            updateQuery += "id_interviewee = ? ";
+        }
+
+        updateQuery += "WHERE id = ? ";
+
+        try (
+                PreparedStatement preparedStatement = connection.prepareStatement(updateQuery, Statement.RETURN_GENERATED_KEYS)
+        ) {
+
+            if (Objects.nonNull(interview.getImportant())) {
+                preparedStatement.setBoolean(1, interview.getImportant());
+            } else if (Objects.nonNull(interview.getAnnotation())) {
+                preparedStatement.setString(1, interview.getAnnotation());
+            } else if (Objects.nonNull(interview.getDate())) {
+                preparedStatement.setString(1, interview.getDate());
+            } else if (Objects.nonNull(interview.getHour())) {
+                preparedStatement.setString(1, interview.getHour());
+            } else if (Objects.nonNull(interview.getEmployee())) {
+                preparedStatement.setInt(1, interview.getEmployee().getId());
+            }  else if (Objects.nonNull(interview.getInterviewee())) {
+                preparedStatement.setInt(1, interview.getInterviewee().getId());
+            }
+
+            preparedStatement.setInt(2, id);
+
+            preparedStatement.execute();
+
+            try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
+                while (resultSet.next()) {
+                    interview.setId(resultSet.getInt(1));
+                }
+            }
+        }
+
+        return "Registro Alterado com sucesso!";
     }
 
     public List<Properties> setToarrayListInterviewee(ResultSet resultSet) throws SQLException {

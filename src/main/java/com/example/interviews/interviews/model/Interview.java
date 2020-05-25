@@ -2,6 +2,8 @@ package com.example.interviews.interviews.model;
 
 import lombok.Builder;
 
+import java.util.Date;
+
 @Builder
 public class Interview {
     private int id;
@@ -9,6 +11,7 @@ public class Interview {
     private Interviewee interviewee;
     private Boolean important;
     private String date;
+    private String hour;
     private String annotation;
 
     public int getId() {
@@ -51,6 +54,14 @@ public class Interview {
         this.date = date;
     }
 
+    public String getHour() {
+        return hour;
+    }
+
+    public void setHour(String hour) {
+        this.hour = hour;
+    }
+
     public String getAnnotation() {
         return annotation;
     }
@@ -68,5 +79,4 @@ public class Interview {
                 "', 'annotation': '" + this.annotation +
                 "'}}";
     }
-
 }

@@ -23,6 +23,8 @@ public class EmployeeController {
 
             employeeList.stream().forEach(i -> System.out.println(i));
 
+            connection.close();
+
             return employeeList;
         }
     }
@@ -33,7 +35,11 @@ public class EmployeeController {
         try (Connection connection = new ConnectionFactory().getConnection()) {
             EmployeeDAO employeeDAO = new EmployeeDAO(connection);
 
-            return employeeDAO.select();
+            List<Employee> result = employeeDAO.select();
+
+            connection.close();
+
+            return result;
         }
     }
 
@@ -43,7 +49,11 @@ public class EmployeeController {
         try (Connection connection = new ConnectionFactory().getConnection()) {
             EmployeeDAO employeeDAO = new EmployeeDAO(connection);
 
-            return employeeDAO.insert(employee);
+            String result = employeeDAO.insert(employee);
+
+            connection.close();
+
+            return result;
         }
     }
 }

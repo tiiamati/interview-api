@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Comparator;
 import java.util.List;
 
 @RestController
@@ -25,6 +26,8 @@ public class InterviewController {
 
             interviewList.stream().forEach(i -> System.out.println(i));
 
+            connection.close();
+
             return interviewList;
         }
     }
@@ -37,7 +40,11 @@ public class InterviewController {
 
             List<Interview> interviewList = interviewDAO.select(Employee.builder().id(id).build());
 
+            interviewList.sort(Comparator.comparing(Interview::getDate));
+            interviewList.sort(Comparator.comparing(Interview::getHour));
             interviewList.stream().forEach(i -> System.out.println(i));
+
+            connection.close();
 
             return interviewList;
         }
@@ -51,17 +58,37 @@ public class InterviewController {
 
             InterviewByInterviewId interviewByInterviewId = interviewDAO.select(id_employee, id_interview);
 
+            connection.close();
+
             return interviewByInterviewId;
         }
     }
 
     @PostMapping
-    public String setInterview(@RequestBody Interview interview) throws SQLException {
+    public String insertInterview(@RequestBody Interview interview) throws SQLException {
 
         try (Connection connection = new ConnectionFactory().getConnection()) {
             InterviewDAO interviewDAO = new InterviewDAO(connection);
 
-            return interviewDAO.insert(interview);
+            String result = interviewDAO.insert(interview);
+
+            connection.close();
+
+            return result;
+        }
+    }
+
+    @PostMapping(path = "/employee/{id_employee}/{id_interview}")
+    public String updateInterviewByInterviewId(@PathVariable("id_interview") int id_interview, @RequestBody Interview interview) throws SQLException {
+
+        try (Connection connection = new ConnectionFactory().getConnection()) {
+            InterviewDAO interviewDAO = new InterviewDAO(connection);
+
+            String result = interviewDAO.update(interview, id_interview);
+
+            connection.close();
+
+            return result;
         }
     }
 }
