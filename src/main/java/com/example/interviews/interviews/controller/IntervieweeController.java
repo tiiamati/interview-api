@@ -1,9 +1,7 @@
 package com.example.interviews.interviews.controller;
 
 import com.example.interviews.interviews.config.ConnectionFactory;
-import com.example.interviews.interviews.dao.EmployeeDAO;
 import com.example.interviews.interviews.dao.IntervieweeDAO;
-import com.example.interviews.interviews.model.Employee;
 import com.example.interviews.interviews.model.Interviewee;
 import org.springframework.web.bind.annotation.*;
 

@@ -6,6 +6,7 @@ import com.example.interviews.interviews.utils.DateFormat;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class InterviewDAO {
@@ -112,6 +113,7 @@ public class InterviewDAO {
                 while (resultSet.next()) {
                     interview.setId(resultSet.getInt(1));
                 }
+                preparedStatement.close();
             }
         }
 
@@ -133,8 +135,9 @@ public class InterviewDAO {
                 while (resultSet.next()) {
                     interviewList.add(setInterview(resultSet));
                 }
-                return interviewList;
+                preparedStatement.close();
             }
+            return interviewList;
         }
     }
 
@@ -153,6 +156,7 @@ public class InterviewDAO {
                 while (resultSet.next()) {
                     return setInterviewEmployeeDetailed(resultSet);
                 }
+                preparedStatement.close();
             }
             return null;
         }
@@ -161,23 +165,60 @@ public class InterviewDAO {
     public List<Interview> select(Employee employee) throws SQLException {
 
         List<Interview> interviewList = new ArrayList<>();
+        String sql = selectQuery + "WHERE e.id = ? AND CAST(i.date AS DATE) >= CURRENT_DATE()";
 
-        String sql = selectQuery + "WHERE e.id = ?";
         try (
                 PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
         ) {
             preparedStatement.setInt(1, employee.getId());
-
             preparedStatement.execute();
 
-            try (ResultSet resultSet = preparedStatement.getResultSet()) {
+            try {
+
+                ResultSet resultSet = preparedStatement.getResultSet();
                 while (resultSet.next()) {
                     Interview interview = setInterviewEmployee(resultSet);
-
                     interviewList.add(interview);
                 }
-                return interviewList;
+
+                resultSet.close();
+
+            } catch (SQLException sqlException) {
+                sqlException.printStackTrace();
             }
+
+            preparedStatement.close();
+            return interviewList;
+        }
+    }
+
+    public List<Interview> select(Employee employee, Map<String, Object> date) throws SQLException {
+
+        List<Interview> interviewList = new ArrayList<>();
+        String sql = selectQuery + "WHERE e.id = ? AND CAST(i.date AS DATE) < CURRENT_DATE()";
+
+        try (
+                PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
+        ) {
+            preparedStatement.setInt(1, employee.getId());
+            preparedStatement.execute();
+
+            try {
+
+                ResultSet resultSet = preparedStatement.getResultSet();
+                while (resultSet.next()) {
+                    Interview interview = setInterviewEmployee(resultSet);
+                    interviewList.add(interview);
+                }
+
+                resultSet.close();
+
+            } catch (SQLException sqlException) {
+                sqlException.printStackTrace();
+            }
+
+            preparedStatement.close();
+            return interviewList;
         }
     }
 
@@ -225,6 +266,7 @@ public class InterviewDAO {
                 while (resultSet.next()) {
                     interview.setId(resultSet.getInt(1));
                 }
+                preparedStatement.close();
             }
         }
 

@@ -39,6 +39,8 @@ public class IntervieweeDAO {
                 while (resultSet.next()) {
                     interviewee.setId(resultSet.getInt(1));
                 }
+
+                preparedStatement.close();
             }
         }
 
@@ -72,6 +74,8 @@ public class IntervieweeDAO {
                     intervieweesList.add(interviewee);
                 }
 
+                preparedStatement.close();
+
                 return intervieweesList;
             }
         }
@@ -101,6 +105,8 @@ public class IntervieweeDAO {
                             .linkedin(resultSet.getNString(9))
                             .build();
                 }
+
+                preparedStatement.close();
             }
         }
         return null;

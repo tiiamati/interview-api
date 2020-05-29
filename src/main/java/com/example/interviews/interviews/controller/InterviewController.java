@@ -11,6 +11,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/interview")
@@ -39,10 +40,23 @@ public class InterviewController {
             InterviewDAO interviewDAO = new InterviewDAO(connection);
 
             List<Interview> interviewList = interviewDAO.select(Employee.builder().id(id).build());
+            orderInterview(interviewList);
 
-            interviewList.sort(Comparator.comparing(Interview::getDate));
-            interviewList.sort(Comparator.comparing(Interview::getHour));
-            interviewList.stream().forEach(i -> System.out.println(i));
+            connection.close();
+
+            return interviewList;
+        }
+    }
+
+    @PostMapping(path = "/employee/{id}")
+    public List<Interview> getInterviewByEmployee(@PathVariable("id") int id, @RequestBody Map<String, Object> payload) throws SQLException {
+
+        try (Connection connection = new ConnectionFactory().getConnection()) {
+            InterviewDAO interviewDAO = new InterviewDAO(connection);
+
+            List<Interview> interviewList = interviewDAO.select(Employee.builder().id(id).build(), payload);
+
+            orderInterview(interviewList);
 
             connection.close();
 
@@ -90,5 +104,13 @@ public class InterviewController {
 
             return result;
         }
+    }
+
+    public List<Interview> orderInterview(List<Interview> interviewList) {
+        interviewList.sort(Comparator.comparing(Interview::getHour));
+        interviewList.sort(Comparator.comparing(Interview::getDate));
+        interviewList.stream().forEach(i -> System.out.println(i));
+
+        return interviewList;
     }
 }

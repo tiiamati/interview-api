@@ -31,6 +31,7 @@ public class EmployeeDAO {
                 while (resultSet.next()) {
                     employee.setId(resultSet.getInt(1));
                 }
+                preparedStatement.close();
             }
         }
         return "Registro Inserido com sucesso!";
@@ -54,6 +55,7 @@ public class EmployeeDAO {
                             .documentNumber(resultSet.getNString(3))
                             .build();
                 }
+                preparedStatement.close();
             }
             return null;
         }
@@ -69,6 +71,7 @@ public class EmployeeDAO {
                 PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
         ) {
             preparedStatement.execute();
+
             try (ResultSet resultSet = preparedStatement.getResultSet()) {
                 while (resultSet.next()) {
                     Employee employee = Employee.builder()
@@ -80,8 +83,9 @@ public class EmployeeDAO {
                     employeesList.add(employee);
                 }
 
-                return employeesList;
+                preparedStatement.close();
             }
+            return employeesList;
         }
     }
 }
