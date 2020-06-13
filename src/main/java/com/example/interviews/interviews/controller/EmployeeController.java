@@ -14,46 +14,42 @@ import java.util.List;
 public class EmployeeController {
 
     @GetMapping
-    public List<Employee> getInterview() throws SQLException {
+    public List<Employee> getInterview() throws Exception {
 
         try (Connection connection = new ConnectionFactory().getConnection()) {
             EmployeeDAO employeeDAO = new EmployeeDAO(connection);
-
             List<Employee> employeeList = employeeDAO.select();
-
             employeeList.stream().forEach(i -> System.out.println(i));
 
-            connection.close();
-
             return employeeList;
+        } catch (Exception ex) {
+            throw ex;
         }
     }
 
     @GetMapping(path = "/{id}")
-    public List<Employee> getInterviewById() throws SQLException {
+    public List<Employee> getInterviewById() throws Exception {
 
         try (Connection connection = new ConnectionFactory().getConnection()) {
             EmployeeDAO employeeDAO = new EmployeeDAO(connection);
-
             List<Employee> result = employeeDAO.select();
 
-            connection.close();
-
             return result;
+        } catch (Exception ex) {
+            throw ex;
         }
     }
 
     @PostMapping
-    public String setEmployee(@RequestBody Employee employee) throws SQLException {
+    public String setEmployee(@RequestBody Employee employee) throws Exception {
 
         try (Connection connection = new ConnectionFactory().getConnection()) {
             EmployeeDAO employeeDAO = new EmployeeDAO(connection);
-
             String result = employeeDAO.insert(employee);
 
-            connection.close();
-
             return result;
+        } catch (Exception ex) {
+            throw ex;
         }
     }
 }

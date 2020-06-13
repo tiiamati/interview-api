@@ -6,7 +6,6 @@ import com.example.interviews.interviews.model.Interviewee;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
 
 @RestController
@@ -14,43 +13,42 @@ import java.util.List;
 public class IntervieweeController {
 
     @GetMapping
-    public List<Interviewee> getInterviewee() throws SQLException {
+    public List<Interviewee> getInterviewee() throws Exception {
 
-        try (Connection connection = new ConnectionFactory().getConnection()) {
+        try (Connection connection = new ConnectionFactory().getConnection();) {
             IntervieweeDAO intervieweeDAO = new IntervieweeDAO(connection);
-
             List<Interviewee> intervieweeList = intervieweeDAO.select();
             intervieweeList.stream().forEach(i -> System.out.println(i));
 
-            connection.close();
-
             return intervieweeList;
+        } catch (Exception ex) {
+            throw ex;
         }
     }
 
     @GetMapping(path = "/{id}")
-    public Interviewee getIntervieweeById(@PathVariable("id") int id) throws SQLException {
+    public Interviewee getIntervieweeById(@PathVariable("id") int id) throws Exception {
 
         try (Connection connection = new ConnectionFactory().getConnection()) {
             IntervieweeDAO intervieweeDAO = new IntervieweeDAO(connection);
-
             Interviewee result = intervieweeDAO.select(id);
-            connection.close();
 
             return result;
+        } catch (Exception ex) {
+            throw ex;
         }
     }
 
     @PostMapping
-    public String setInterviewee(@RequestBody Interviewee interviewee) throws SQLException {
+    public String setInterviewee(@RequestBody Interviewee interviewee) throws Exception {
 
         try (Connection connection = new ConnectionFactory().getConnection()) {
             IntervieweeDAO intervieweeDAO = new IntervieweeDAO(connection);
-
             String result = intervieweeDAO.insert(interviewee);
-            connection.close();
 
             return result;
+        }  catch (Exception ex) {
+            throw ex;
         }
     }
 }
