@@ -25,8 +25,6 @@ public class InterviewController {
 
             List<Interview> interviewList = interviewDAO.select();
 
-            interviewList.stream().forEach(i -> System.out.println(i));
-
             connection.close();
 
             return interviewList;
@@ -109,7 +107,6 @@ public class InterviewController {
     public List<Interview> orderInterview(List<Interview> interviewList) {
         interviewList.sort(Comparator.comparing(Interview::getHour));
         interviewList.sort(Comparator.comparing(Interview::getDate));
-        interviewList.stream().forEach(i -> System.out.println(i));
 
         return interviewList;
     }
