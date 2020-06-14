@@ -30,7 +30,7 @@ public class InterviewController {
     }
 
     @GetMapping(path = "/employee/{id}")
-    public List<Interview> getInterviewByEmployee(@PathVariable("id") int id) throws Exception {
+    public List<Interview> getInterviewByEmployee(@PathVariable("id") Long id) throws Exception {
 
         try (Connection connection = new ConnectionFactory().getConnection()) {
             InterviewDAO interviewDAO = new InterviewDAO(connection);
@@ -44,7 +44,7 @@ public class InterviewController {
     }
 
     @PostMapping(path = "/employee/{id}")
-    public List<Interview> getInterviewByEmployee(@PathVariable("id") int id, @RequestBody Map<String, Object> payload) throws Exception {
+    public List<Interview> getInterviewByEmployee(@PathVariable("id") Long id, @RequestBody Map<String, Object> payload) throws Exception {
 
         try (Connection connection = new ConnectionFactory().getConnection()) {
             InterviewDAO interviewDAO = new InterviewDAO(connection);

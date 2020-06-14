@@ -2,6 +2,9 @@ package com.example.interviews.interviews.dao;
 
 import com.example.interviews.interviews.model.Employee;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,50 +18,53 @@ public class EmployeeDAO {
         this.connection = connection;
     }
 
-    public String insert(Employee employee) throws SQLException {
+    public static String insert(Employee employee) {
 
-        String sql = "INSERT INTO EMPLOYEE (name, document_number) VALUES ( ?, ?)";
+        try {
+            EntityManagerFactory emf = Persistence.createEntityManagerFactory("employee");
+            EntityManager em = emf.createEntityManager();
 
-        try (
-                PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
-        ) {
-            preparedStatement.setString(1, employee.getName());
-            preparedStatement.setString(2, employee.getDocumentNumber());
-
-            preparedStatement.execute();
-
-            try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
-                while (resultSet.next()) {
-                    employee.setId(resultSet.getInt(1));
-                }
-                preparedStatement.close();
-            }
+            em.getTransaction().begin();
+            em.persist(employee);
+            em.getTransaction().commit();
+        } catch (Exception ex) {
+            throw ex;
         }
+
         return "Registro Inserido com sucesso!";
     }
 
-    public Employee select(int id) throws SQLException {
+    public static String update(Long id, Employee employee) {
 
-        String sql = "SELECT * FROM EMPLOYEE WHERE id = ?";
+        try {
+            EntityManagerFactory emf = Persistence.createEntityManagerFactory("employee");
+            EntityManager em = emf.createEntityManager();
 
-        try (
-                PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
-        ) {
-            preparedStatement.setInt(1, id);
+            Employee e = em.find(Employee.class, id);
 
-            preparedStatement.execute();
-            try (ResultSet resultSet = preparedStatement.getResultSet()) {
-                while (resultSet.next()) {
-                    return Employee.builder()
-                            .id(resultSet.getInt(1))
-                            .name(resultSet.getString(2))
-                            .documentNumber(resultSet.getNString(3))
-                            .build();
-                }
-                preparedStatement.close();
-            }
-            return null;
+            em.getTransaction().begin();
+
+            e.setName(employee.getName());
+            e.setDocumentNumber(employee.getDocumentNumber());
+            e.setStatus(employee.getStatus());
+
+            em.getTransaction().commit();
+
+        } catch (Exception ex) {
+            throw ex;
         }
+
+        return "Registro alterado com sucesso!";
+    }
+
+    public Employee select(int id) {
+
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("employee");
+        EntityManager em = emf.createEntityManager();
+
+        Employee e = em.find(Employee.class, id);
+
+        return e;
     }
 
     public List<Employee> select() throws SQLException {
@@ -75,7 +81,7 @@ public class EmployeeDAO {
             try (ResultSet resultSet = preparedStatement.getResultSet()) {
                 while (resultSet.next()) {
                     Employee employee = Employee.builder()
-                            .id(resultSet.getInt(1))
+                            .id(resultSet.getLong(1))
                             .name(resultSet.getString(2))
                             .documentNumber(resultSet.getNString(3))
                             .build();
@@ -89,3 +95,5 @@ public class EmployeeDAO {
         }
     }
 }
+
+

@@ -37,10 +37,6 @@ public class InterviewDAO {
                 .date(resultSet.getString(3))
                 .hour(DateFormat.getHour(resultSet.getString(16)))
                 .annotation(resultSet.getString(4))
-                .employee(Employee.builder()
-                    .id(resultSet.getInt(5))
-                    .name(resultSet.getString(6))
-                    .build())
                 .interviewee(Interviewee.builder()
                         .id(resultSet.getInt(7))
                         .name(resultSet.getString(8))
@@ -100,7 +96,7 @@ public class InterviewDAO {
         try (
                 PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
         ) {
-            preparedStatement.setInt(1, interview.getEmployee().getId());
+            preparedStatement.setLong(1, interview.getEmployee().getId());
             preparedStatement.setInt(2, interview.getInterviewee().getId());
             preparedStatement.setBoolean(3, interview.getImportant());
             preparedStatement.setString(4, interview.getDate());
@@ -170,7 +166,7 @@ public class InterviewDAO {
         try (
                 PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
         ) {
-            preparedStatement.setInt(1, employee.getId());
+            preparedStatement.setLong(1, employee.getId());
             preparedStatement.execute();
 
             try {
@@ -200,7 +196,7 @@ public class InterviewDAO {
         try (
                 PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
         ) {
-            preparedStatement.setInt(1, employee.getId());
+            preparedStatement.setLong(1, employee.getId());
             preparedStatement.execute();
 
             try {
@@ -253,7 +249,7 @@ public class InterviewDAO {
             } else if (Objects.nonNull(interview.getHour())) {
                 preparedStatement.setString(1, interview.getHour());
             } else if (Objects.nonNull(interview.getEmployee())) {
-                preparedStatement.setInt(1, interview.getEmployee().getId());
+                preparedStatement.setLong(1, interview.getEmployee().getId());
             }  else if (Objects.nonNull(interview.getInterviewee())) {
                 preparedStatement.setInt(1, interview.getInterviewee().getId());
             }

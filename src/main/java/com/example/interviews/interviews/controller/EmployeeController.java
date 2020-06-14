@@ -41,15 +41,12 @@ public class EmployeeController {
     }
 
     @PostMapping
-    public String setEmployee(@RequestBody Employee employee) throws Exception {
+    public String setEmployee(@RequestBody Employee employee) throws SQLException {
+        return EmployeeDAO.insert(employee);
+    }
 
-        try (Connection connection = new ConnectionFactory().getConnection()) {
-            EmployeeDAO employeeDAO = new EmployeeDAO(connection);
-            String result = employeeDAO.insert(employee);
-
-            return result;
-        } catch (Exception ex) {
-            throw ex;
-        }
+    @PostMapping(path = "/{id}")
+    public String updateEmployee(@PathVariable("id") Long id, @RequestBody Employee employee) throws SQLException {
+        return EmployeeDAO.update(id, employee);
     }
 }
