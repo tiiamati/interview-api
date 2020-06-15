@@ -21,5 +21,5 @@ public class Employee {
     private String name;
     private String documentNumber;
     private Timestamp timestamp;
-    private int status;
+    private Status status;
 }

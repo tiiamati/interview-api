@@ -1,114 +1,76 @@
 package com.example.interviews.interviews.dao;
 
-
-
+import com.example.interviews.interviews.config.ConnectionFactory;
+import com.example.interviews.interviews.model.Employee;
 import com.example.interviews.interviews.model.Interviewee;
+import com.example.interviews.interviews.translate.Strings;
 
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.List;
 
 
 public class IntervieweeDAO {
 
-    private Connection connection;
+    public static String insert(Interviewee interviewee) {
 
-    public IntervieweeDAO(Connection connection) {
-        this.connection = connection;
-    }
+        try {
+            EntityManager em = ConnectionFactory.Connection();
 
-    public String insert(Interviewee interviewee) throws SQLException {
-
-        String sql = "INSERT INTO INTERVIEWEE (name, cellphone, email, curriculum, city, date_of_birth, time_worked, linkedin) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?)";
-
-        try (
-                PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
-        ) {
-            preparedStatement.setString(1, interviewee.getName());
-            preparedStatement.setString(2, interviewee.getCellphone());
-            preparedStatement.setString(3, interviewee.getEmail());
-            preparedStatement.setString(4, interviewee.getCurriculum());
-            preparedStatement.setString(5, interviewee.getCity());
-            preparedStatement.setString(6, interviewee.getDateOfBirth());
-            preparedStatement.setString(7, interviewee.getTimeWorkedInTheArea());
-            preparedStatement.setString(8, interviewee.getLinkedin());
-
-            preparedStatement.execute();
-
-            try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
-                while (resultSet.next()) {
-                    interviewee.setId(resultSet.getInt(1));
-                }
-
-                preparedStatement.close();
-            }
+            em.getTransaction().begin();
+            em.persist(interviewee);
+            em.getTransaction().commit();
+        } catch (Exception ex) {
+            throw ex;
         }
 
-        return "Registro Inserido com sucesso!";
+        return Strings.BD_SAVE;
     }
 
-    public List<Interviewee> select() throws SQLException {
-
-        List<Interviewee> intervieweesList = new ArrayList<>();
-
-        String sql = "SELECT * FROM INTERVIEWEE";
-
-        try (
-                PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
-        ) {
-            preparedStatement.execute();
-            try (ResultSet resultSet = preparedStatement.getResultSet()) {
-                while (resultSet.next()) {
-                    Interviewee interviewee = Interviewee.builder()
-                            .id(resultSet.getInt(1))
-                            .name(resultSet.getString(2))
-                            .cellphone(resultSet.getNString(3))
-                            .email(resultSet.getNString(4))
-                            .curriculum(resultSet.getNString(5))
-                            .city(resultSet.getNString(6))
-                            .dateOfBirth(resultSet.getNString(7))
-                            .timeWorkedInTheArea(resultSet.getNString(8))
-                            .linkedin(resultSet.getNString(9))
-                            .build();
-
-                    intervieweesList.add(interviewee);
-                }
-
-                preparedStatement.close();
-
-                return intervieweesList;
-            }
+    public static List<Interviewee> select() {
+        try {
+            String jpql = "select i from Interviewee i";
+            TypedQuery<Interviewee> query = ConnectionFactory.Connection().createQuery(jpql, Interviewee.class);
+            return query.getResultList();
+        } catch (Exception ex){
+            throw ex;
         }
     }
 
-    public Interviewee select(int id) throws SQLException {
-
-        String sql = "SELECT * FROM INTERVIEWEE WHERE id = ? ";
-
-        try (
-                PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
-        ) {
-            preparedStatement.setInt(1, id);
-
-            preparedStatement.execute();
-            try (ResultSet resultSet = preparedStatement.getResultSet()) {
-                while (resultSet.next()) {
-                    return Interviewee.builder()
-                            .id(resultSet.getInt(1))
-                            .name(resultSet.getString(2))
-                            .cellphone(resultSet.getNString(3))
-                            .email(resultSet.getNString(4))
-                            .curriculum(resultSet.getNString(5))
-                            .city(resultSet.getNString(6))
-                            .dateOfBirth(resultSet.getNString(7))
-                            .timeWorkedInTheArea(resultSet.getNString(8))
-                            .linkedin(resultSet.getNString(9))
-                            .build();
-                }
-
-                preparedStatement.close();
-            }
+    public static Interviewee select(Interviewee interviewee) {
+        try {
+            EntityManager em = ConnectionFactory.Connection();
+            return em.find(Interviewee.class, interviewee.getId());
+        } catch (Exception ex){
+            throw ex;
         }
-        return null;
+    }
+
+    public static String update(Long id, Interviewee interviewee) {
+
+        try {
+            EntityManager em = ConnectionFactory.Connection();
+
+            Interviewee e = em.find(Interviewee.class, id);
+
+            em.getTransaction().begin();
+
+            e.setName(interviewee.getName());
+            e.setCellphone(interviewee.getCellphone());
+            e.setCity(interviewee.getCity());
+            e.setCurriculum(interviewee.getCurriculum());
+            e.setDateOfBirth(interviewee.getDateOfBirth());
+            e.setEmail(interviewee.getEmail());
+            e.setLinkedin(interviewee.getLinkedin());
+            e.setTimeWorkedInTheArea(interviewee.getTimeWorkedInTheArea());
+
+            em.getTransaction().commit();
+
+        } catch (Exception ex) {
+            throw ex;
+        }
+
+        return Strings.BD_UPDATE;
     }
 }

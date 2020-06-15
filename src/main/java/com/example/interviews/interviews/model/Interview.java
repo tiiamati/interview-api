@@ -1,23 +1,29 @@
 package com.example.interviews.interviews.model;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.sql.Timestamp;
 
-@Getter
-@Setter
+@Entity
+@Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Interview {
-    private int id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne
     private Employee employee;
+    @ManyToOne
     private Interviewee interviewee;
     private Boolean important;
     private String date;
     private String hour;
     private String annotation;
+    private Boolean done;
+    private Timestamp timestamp;
+    private Status status;
 }
